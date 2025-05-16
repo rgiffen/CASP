@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardiac Age Calculator</title>
+    <style>
+        :root {
+            --primary-color: #3a6ea5;
+            --secondary-color: #c0392b;
+            --text-color: #333;
+            --light-bg: #f5f7fa;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .intro {
+            max-width: 800px;
+            margin: 0 auto 30px;
+            padding: 15px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .calculator {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        @media (min-width: 768px) {
+            .calculator {
+                flex-direction: row;
+            }
+        }
+        
+        .form-container {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .results-container {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            position: relative;
+        }
+        
+        @media (min-width: 768px) {
+            .results-container {
+                position: sticky;
+                top: 20px;
+                align-self: flex-start;
+            }
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+        }
+        
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .radio-option, .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .radio-option input, .checkbox-option input {
+            width: auto;
+        }
+        
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #2c5282;
+        }
+        
+        .btn-secondary {
+            background-color: #718096;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #4a5568;
+        }
+        
+        .result-box {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            background-color: var(--light-bg);
+        }
+        
+        .age-display-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .age-display {
+            font-size: 42px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+        
+        .cardiac-age {
+            color: var(--secondary-color);
+            font-size: 48px; /* Make cardiac age slightly larger */
+        }
+        
+        .age-difference {
+            font-weight: bold;
+        }
+        
+        .positive-difference {
+            color: var(--secondary-color);
+        }
+        
+        .negative-difference {
+            color: #27ae60;
+        }
+        
+        .zero-difference {
+            color: #7f8c8d;
+        }
+        
+        .recommendations {
+            margin-top: 20px;
+        }
+        
+        .recommendation-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--primary-color);
+            background-color: #f8f9fa;
+        }
+        
+        .slidecontainer {
+            width: 100%;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+        
+        .slider:hover {
+            opacity: 1;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-group input {
+            flex: 1;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .visible {
+            display: block !important;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .disclaimer {
+            padding: 15px;
+            background-color: #fdedec;
+            border-left: 4px solid var(--secondary-color);
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+                #mobile-cardiac-age-sticky-header {
+            display: none; /* Hidden by default */
+            position: sticky;
+            top: 0;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            text-align: center;
+            z-index: 1000; /* Ensure it's above other content */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: 1em; 
+            font-weight: bold;
+        }
+
+        #mobile-cardiac-age-sticky-header #mobile-age-difference-wrapper {
+            font-weight: normal;
+            font-size: 0.9em; /* Make difference text slightly smaller */
+            margin-left: 8px; /* Space from cardiac age value */
+        }
+
+        #mobile-age-difference-text.positive { color: #ffcdd2; /* Lighter red for positive difference */ }
+        #mobile-age-difference-text.negative { color: #c8e6c9; /* Lighter green for negative difference */ }
+        #mobile-age-difference-text.zero { color: #e0e0e0; /* Light gray/off-white for zero difference */ }
+
+
+        @media (max-width: 767px) { /* Styles for screens smaller than 768px */
+            #mobile-cardiac-age-sticky-header {
+                display: flex; /* Use flex for better alignment */
+                justify-content: center;
+                align-items: center;
+                gap: 10px; /* Space between the two main span elements if needed */
+            }
+
+            /* Ensure the main results container doesn't try to be sticky on mobile,
+               as we now have the dedicated mobile sticky header. */
+            .results-container {
+                position: static; 
+                top: auto;
+                align-self: initial; 
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Cardiac Age Calculator</h1>
+        <p>Understand your heart health in terms of years</p>
+    </header>
+
+    <!-- START: New Mobile Sticky Header -->
+    <div id="mobile-cardiac-age-sticky-header">
+        <span>Cardiac Age: <strong id="mobile-cardiac-age-value">--</strong></span>
+        <span id="mobile-age-difference-wrapper">
+            (<span id="mobile-age-difference-text">vs Actual</span>)
+        </span>
+    </div>
+    <!-- END: New Mobile Sticky Header -->
+    
+    <div class="intro">
+        <h2>What is Cardiac Age?</h2>
+        <p>Your cardiac age is an estimation of how old your heart is functioning compared to your actual age. It's based on various risk factors that affect your cardiovascular health. This calculator helps you understand how your lifestyle and health metrics might be affecting your heart's age.</p>
+        <div class="disclaimer">
+            <strong>Disclaimer:</strong> This tool provides an estimation only and does not replace professional medical advice. Always consult with a healthcare provider about your cardiovascular health.
+        </div>
+    </div>
+    
+    <div class="calculator">
+        <div class="form-container">
+            <form id="cardiacForm">
+                <div class="form-section">
+                    <h3>Personal Information</h3>
+                    <div class="form-group">
+                        <label for="age">Chronological Age</label>
+                        <input type="number" id="age" name="age" min="18" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Sex at birth</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="male" name="gender" value="male" required>
+                                <label for="male">Male</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="female" name="gender" value="female">
+                                <label for="female">Female</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Lifestyle Factors</h3>
+                    <div class="form-group">
+                        <label for="smoking">Smoking Status</label>
+                        <select id="smoking" name="smoking" required>
+                            <option value="">Select an option</option>
+                            <option value="never">Never smoked</option>
+                            <option value="former">Former smoker</option>
+                            <option value="current">Current smoker</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="physicalActivity">Physical Activity Level</label>
+                        <select id="physicalActivity" name="physicalActivity" required>
+                            <option value="">Select an option</option>
+                            <option value="veryActive">Very active (150+ min/week vigorous exercise)</option>
+                            <option value="active">Active (150+ min/week moderate exercise)</option>
+                            <option value="moderate">Moderate (Some exercise but less than recommended)</option>
+                            <option value="sedentary">Sedentary (Little to no regular exercise)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="diet">Diet Quality</label>
+                        <select id="diet" name="diet" required>
+                            <option value="">Select an option</option>
+                            <option value="excellent">Excellent (Mediterranean/DASH diet, whole foods)</option>
+                            <option value="good">Good (Mostly healthy with occasional treats)</option>
+                            <option value="average">Average (Mix of healthy and processed foods)</option>
+                            <option value="poor">Poor (High in processed foods, saturated fats, sugars)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="stress">Stress Level</label>
+                        <select id="stress" name="stress" required>
+                            <option value="">Select an option</option>
+                            <option value="low">Low (Rarely feel stressed)</option>
+                            <option value="moderate">Moderate (Occasionally feel stressed)</option>
+                            <option value="high">High (Frequently feel stressed)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Medical Metrics</h3>
+                    <div class="form-group">
+                        <label>Blood Pressure (mmHg)</label>
+                        <div class="input-group">
+                            <input type="number" id="systolic" name="systolic" placeholder="Systolic" min="80" max="220" required>
+                            <input type="number" id="diastolic" name="diastolic" placeholder="Diastolic" min="40" max="120" required>
+                        </div>
+                        <small>e.g., 120/80 - enter 120 for Systolic and 80 for Diastolic</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cholesterol">Cholesterol Level</label>
+                        <select id="cholesterol" name="cholesterol" required>
+                            <option value="">Select an option</option>
+                            <option value="optimal">Optimal (LDL < 100 mg/dL)</option>
+                            <option value="nearOptimal">Near optimal (LDL 100-129 mg/dL)</option>
+                            <option value="borderline">Borderline high (LDL 130-159 mg/dL)</option>
+                            <option value="high">High (LDL 160-189 mg/dL)</option>
+                            <option value="veryHigh">Very high (LDL > 190 mg/dL)</option>
+                            <option value="unknown">I don't know</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="diabetes">Diabetes Status</label>
+                        <select id="diabetes" name="diabetes" required>
+                            <option value="">Select an option</option>
+                            <option value="no">No diabetes</option>
+                            <option value="prediabetes">Prediabetes</option>
+                            <option value="yes">Type 1 or Type 2 diabetes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Body Measurements</label>
+                        <div class="unit-selector-group radio-group" style="margin-bottom: 10px;">
+                            <div class="radio-option">
+                                <input type="radio" id="metricUnits" name="units" value="metric" checked>
+                                <label for="metricUnits">Metric (kg, m)</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="imperialUnits" name="units" value="imperial">
+                                <label for="imperialUnits">Imperial (lbs, ft/in)</label>
+                            </div>
+                        </div>
+
+                        <div id="metricInputsContainer">
+                            <div class="input-group">
+                                <input type="number" id="weight_kg" name="weight_kg" placeholder="Weight (kg)" min="30" max="250" step="0.1">
+                                <input type="number" id="height_m" name="height_m" placeholder="Height (m)" min="1" max="2.5" step="0.01">
+                            </div>
+                            <small>e.g., 70 kg, 1.75 m</small>
+                        </div>
+
+                        <div id="imperialInputsContainer" class="hidden">
+                             <div class="input-group">
+                                <input type="number" id="weight_lbs" name="weight_lbs" placeholder="Weight (lbs)" min="60" max="550" step="0.1">
+                             </div>
+                             <div class="input-group" style="margin-top:10px;">
+                                <input type="number" id="height_ft" name="height_ft" placeholder="Height (ft)" min="3" max="8" step="1">
+                                <input type="number" id="height_in" name="height_in" placeholder="Height (in)" min="0" max="11" step="0.1">
+                            </div>
+                            <small>e.g., 154 lbs, 5 ft 9 in</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="familyHistory">Family History of Heart Disease</label>
+                        <select id="familyHistory" name="familyHistory" required>
+                            <option value="">Select an option</option>
+                            <option value="yes">Yes (parent or sibling with early heart disease)</option>
+                            <option value="no">No known family history</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="reset" class="btn btn-secondary">Reset Form</button>
+            </form>
+        </div>
+        
+        <div class="results-container">
+            <h3>Your Cardiac Age</h3>
+            
+            <div class="result-box">
+                <div class="age-display-container">
+                    <div>
+                        <h4>Chronological Age</h4>
+                        <div class="age-display" id="chronologicalAgeDisplay">--</div>
+                    </div>
+                    <div>
+                        <h4>Cardiac Age</h4>
+                        <div class="age-display cardiac-age" id="cardiacAgeDisplay">--</div>
+                    </div>
+                </div>
+                <p>Your heart is functioning like someone who is <span class="age-difference" id="ageDifferenceDisplay">your actual age</span>.</p>
+                <p id="initialPrompt">Enter your age to begin the assessment.<br><small>Your results will update in real-time as you complete the form.</small></p>
+            </div>
+            
+            <div id="detailedResults" class="hidden">
+                <div class="recommendations">
+                    <h4>Your Health Insights</h4>
+                    <div id="recommendationsList">
+                        <p>Complete more of the form to receive personalized recommendations.</p>
+                    </div>
+                </div>
+                
+                <div id="riskFactors">
+                    <h4>Your Risk Factor Breakdown</h4>
+                    <div id="riskFactorsList">
+                        <p>Complete more of the form to see your risk factor breakdown.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 Cardiac Age Calculator - This tool is for educational purposes only and is not a substitute for professional medical advice.</p>
+    </footer>
+    
+    <script>
+        // Define the risk factors and their impact on cardiac age
+        const riskFactors = {
+            smoking: {
+                current: { impact: 5, description: "Current smoking adds 5 years to your cardiac age" },
+                former: { impact: 2, description: "Being a former smoker adds 2 years to your cardiac age" },
+                never: { impact: 0, description: "Never smoking has no impact on your cardiac age" }
+            },
+            bloodPressure: {
+                optimal: { impact: -1, description: "Optimal blood pressure reduces your cardiac age by 1 year" },
+                normal: { impact: 0, description: "Normal blood pressure has no impact on your cardiac age" },
+                elevated: { impact: 1, description: "Elevated blood pressure adds 1 year to your cardiac age" },
+                hypertension1: { impact: 3, description: "Stage 1 hypertension adds 3 years to your cardiac age" },
+                hypertension2: { impact: 5, description: "Stage 2 hypertension adds 5 years to your cardiac age" }
+            },
+            cholesterol: {
+                optimal: { impact: -1, description: "Optimal cholesterol levels reduce your cardiac age by 1 year" },
+                nearOptimal: { impact: 0, description: "Near optimal cholesterol levels have no impact on your cardiac age" },
+                borderline: { impact: 1, description: "Borderline high cholesterol adds 1 year to your cardiac age" },
+                high: { impact: 3, description: "High cholesterol adds 3 years to your cardiac age" },
+                veryHigh: { impact: 5, description: "Very high cholesterol adds 5 years to your cardiac age" },
+                unknown: { impact: 0, description: "Unknown cholesterol levels - we recommend getting tested" }
+            },
+            diabetes: {
+                yes: { impact: 5, description: "Having diabetes adds 5 years to your cardiac age" },
+                prediabetes: { impact: 2, description: "Having prediabetes adds 2 years to your cardiac age" },
+                no: { impact: 0, description: "Not having diabetes has no impact on your cardiac age" }
+            },
+            familyHistory: {
+                yes: { impact: 2, description: "Family history of heart disease adds 2 years to your cardiac age" },
+                no: { impact: 0, description: "No family history of heart disease has no impact on your cardiac age" }
+            },
+            physicalActivity: {
+                veryActive: { impact: -2, description: "Being very physically active reduces your cardiac age by 2 years" },
+                active: { impact: -1, description: "Being physically active reduces your cardiac age by 1 year" },
+                moderate: { impact: 0, description: "Moderate physical activity has no impact on your cardiac age" },
+                sedentary: { impact: 2, description: "Being sedentary adds 2 years to your cardiac age" }
+            },
+            diet: {
+                excellent: { impact: -2, description: "An excellent diet reduces your cardiac age by 2 years" },
+                good: { impact: -1, description: "A good diet reduces your cardiac age by 1 year" },
+                average: { impact: 0, description: "An average diet has no impact on your cardiac age" },
+                poor: { impact: 2, description: "A poor diet adds 2 years to your cardiac age" }
+            },
+            bmi: {
+                underweight: { impact: 1, description: "Being underweight adds 1 year to your cardiac age" },
+                normal: { impact: -1, description: "Having a normal BMI reduces your cardiac age by 1 year" },
+                overweight: { impact: 1, description: "Being overweight adds 1 year to your cardiac age" },
+                obese: { impact: 3, description: "Obesity adds 3 years to your cardiac age" }
+            },
+            stress: {
+                low: { impact: -1, description: "Low stress levels reduce your cardiac age by 1 year" },
+                moderate: { impact: 0, description: "Moderate stress levels have no impact on your cardiac age" },
+                high: { impact: 2, description: "High stress levels add 2 years to your cardiac age" }
+            },
+            gender: {
+                male: { impact: 1, description: "Being male adds slightly to cardiovascular risk" },
+                female: { impact: 0, description: "Being female (pre-menopause) has a slight protective effect" }
+            }
+        };
+
+        // Helper functions
+        function calculateBMICategory(weight_kg, height_m) {
+            console.log("calculateBMICategory received: weight_kg =", weight_kg, "height_m =", height_m);
+            if (isNaN(weight_kg) || isNaN(height_m) || height_m <= 0 || weight_kg <= 0) { // Added check for <=0
+                console.log("BMI calculation skipped due to invalid or non-positive weight/height.");
+                return null; // Return null if inputs are invalid for BMI
+            }
+            const bmi = weight_kg / (height_m * height_m);
+            console.log("Calculated BMI:", bmi.toFixed(2));
+            
+            let category;
+            if (bmi < 18.5) category = "underweight";
+            else if (bmi < 25) category = "normal";
+            else if (bmi < 30) category = "overweight";
+            else category = "obese";
+            
+            console.log("Determined BMI category:", category);
+            return category;
+        }
+
+        function getBPCategory(systolic, diastolic) {
+            if (systolic < 120 && diastolic < 80) return "optimal";
+            if (systolic < 130 && diastolic < 85) return "normal";
+            if ((systolic >= 130 && systolic < 140) || (diastolic >= 85 && diastolic < 90)) return "elevated";
+            if ((systolic >= 140 && systolic < 160) || (diastolic >= 90 && diastolic < 100)) return "hypertension1";
+            return "hypertension2";
+        }
+
+        function lbsToKg(lbs) {
+            return lbs * 0.453592;
+        }
+
+        function feetInchesToMeters(feet, inches) {
+            const totalInches = (feet * 12) + (inches || 0); // Handle if inches is null/0
+            return totalInches * 0.0254;
+        }
+
+        function calculateCardiacAge(chronologicalAge, selectedFactors) {
+            let cardiacAge = chronologicalAge;
+            let impactDetails = [];
+            
+            // Apply adjustments based on selected factors
+            for (const factor in selectedFactors) {
+                if (selectedFactors.hasOwnProperty(factor) && riskFactors.hasOwnProperty(factor)) {
+                    const value = selectedFactors[factor];
+                    if (riskFactors[factor].hasOwnProperty(value)) {
+                        const impact = riskFactors[factor][value].impact;
+                        cardiacAge += impact;
+                        
+                        if (impact !== 0) {
+                            impactDetails.push({
+                                factor,
+                                value,
+                                impact,
+                                description: riskFactors[factor][value].description
+                            });
+                        }
+                    }
+                }
+            }
+            
+            // Cardiac age shouldn't be less than 18
+            return {
+                cardiacAge: Math.max(18, cardiacAge),
+                impactDetails
+            };
+        }
+
+        function generateRecommendations(impactDetails) {
+            const recommendations = [];
+            
+            // Sort impact details by descending impact (most negative/positive first)
+            const sortedImpacts = [...impactDetails].sort((a, b) => Math.abs(b.impact) - Math.abs(a.impact));
+            
+            // Generate recommendations based on negative factors first
+            const negativeFactors = sortedImpacts.filter(detail => detail.impact > 0);
+            if (negativeFactors.length > 0) {
+                recommendations.push("Consider focusing on these areas to improve your cardiac health:");
+                
+                negativeFactors.forEach(factor => {
+                    let recommendation = "";
+                    
+                    switch(factor.factor) {
+                        case "smoking":
+                            if (factor.value === "current") {
+                                recommendation = "Quitting smoking can significantly improve your heart health and reduce your cardiac age.";
+                            } else if (factor.value === "former") {
+                                recommendation = "Great job quitting smoking! Your risk continues to decrease the longer you stay smoke-free.";
+                            }
+                            break;
+                            
+                        case "bloodPressure":
+                            if (factor.value === "elevated" || factor.value === "hypertension1" || factor.value === "hypertension2") {
+                                recommendation = "Work with your healthcare provider to manage your blood pressure through diet, exercise, and possibly medication.";
+                            }
+                            break;
+                            
+                        case "cholesterol":
+                            if (factor.value === "borderline" || factor.value === "high" || factor.value === "veryHigh") {
+                                recommendation = "Consider discussing cholesterol management strategies with your healthcare provider, including diet changes and possibly medication.";
+                            }
+                            break;
+                            
+                        case "diabetes":
+                            if (factor.value === "yes") {
+                                recommendation = "Properly managing your diabetes is crucial for heart health. Work closely with your healthcare team.";
+                            } else if (factor.value === "prediabetes") {
+                                recommendation = "Taking steps now to manage prediabetes can prevent progression to type 2 diabetes and reduce heart risks.";
+                            }
+                            break;
+                            
+                        case "physicalActivity":
+                            if (factor.value === "sedentary") {
+                                recommendation = "Increasing your physical activity level can significantly improve heart health. Aim for at least 150 minutes of moderate activity weekly.";
+                            }
+                            break;
+                            
+                        case "diet":
+                            if (factor.value === "poor") {
+                                recommendation = "Making dietary improvements like reducing processed foods and increasing fruits and vegetables can benefit your heart health.";
+                            } else if (factor.value === "average") {
+                                recommendation = "Consider adopting more heart-healthy eating patterns like the Mediterranean or DASH diet.";
+                            }
+                            break;
+                            
+                        case "bmi":
+                            if (factor.value === "overweight" || factor.value === "obese") {
+                                recommendation = "Working towards a healthier weight through sustainable diet and exercise changes can improve heart health.";
+                            } else if (factor.value === "underweight") {
+                                recommendation = "Consider discussing with a healthcare provider about reaching a healthier weight.";
+                            }
+                            break;
+                            
+                        case "stress":
+                            if (factor.value === "high") {
+                                recommendation = "Finding effective stress management techniques like mindfulness, exercise, or adequate sleep can improve heart health.";
+                            }
+                            break;
+                    }
+                    
+                    if (recommendation) {
+                        recommendations.push(recommendation);
+                    }
+                });
+            }
+            
+            // Generate recommendations based on positive factors
+            const positiveFactors = sortedImpacts.filter(detail => detail.impact < 0);
+            if (positiveFactors.length > 0) {
+                recommendations.push("Keep up the good work in these areas:");
+                
+                positiveFactors.forEach(factor => {
+                    let recommendation = "";
+                    
+                    switch(factor.factor) {
+                        case "bloodPressure":
+                            if (factor.value === "optimal") {
+                                recommendation = "You're maintaining excellent blood pressure - continue your healthy habits!";
+                            }
+                            break;
+                            
+                        case "cholesterol":
+                            if (factor.value === "optimal") {
+                                recommendation = "Your optimal cholesterol levels are benefiting your heart health - keep it up!";
+                            }
+                            break;
+                            
+                        case "physicalActivity":
+                            if (factor.value === "veryActive" || factor.value === "active") {
+                                recommendation = "Your regular physical activity is providing excellent heart health benefits!";
+                            }
+                            break;
+                            
+                        case "diet":
+                            if (factor.value === "excellent" || factor.value === "good") {
+                                recommendation = "Your healthy diet is providing important benefits for your heart!";
+                            }
+                            break;
+                            
+                        case "bmi":
+                            if (factor.value === "normal") {
+                                recommendation = "Maintaining a healthy weight is beneficial for your heart health!";
+                            }
+                            break;
+                            
+                        case "stress":
+                            if (factor.value === "low") {
+                                recommendation = "Your stress management is benefiting your heart health!";
+                            }
+                            break;
+                    }
+                    
+                    if (recommendation) {
+                        recommendations.push(recommendation);
+                    }
+                });
+            }
+            
+            // Add general recommendations if few specific ones were generated
+            if (recommendations.length < 3) {
+                recommendations.push("Regular check-ups with your healthcare provider are important for monitoring heart health.");
+                recommendations.push("Even small improvements in diet, physical activity, and stress management can benefit heart health.");
+            }
+            
+            return recommendations;
+        }
+
+        // Event listeners and form handling
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("cardiacForm");
+            const chronologicalAgeDisplay = document.getElementById("chronologicalAgeDisplay");
+            const cardiacAgeDisplay = document.getElementById("cardiacAgeDisplay");
+            const ageDifferenceDisplay = document.getElementById("ageDifferenceDisplay");
+            const recommendationsList = document.getElementById("recommendationsList");
+            const riskFactorsList = document.getElementById("riskFactorsList");
+            const initialPrompt = document.getElementById("initialPrompt");
+            const detailedResults = document.getElementById("detailedResults");
+
+            const mobileCardiacAgeValue = document.getElementById("mobile-cardiac-age-value");
+            const mobileAgeDifferenceWrapper = document.getElementById("mobile-age-difference-wrapper");
+            const mobileAgeDifferenceText = document.getElementById("mobile-age-difference-text");
+
+            const metricUnitsRadio = document.getElementById("metricUnits");
+            const imperialUnitsRadio = document.getElementById("imperialUnits");
+            const metricInputsContainer = document.getElementById("metricInputsContainer");
+            const imperialInputsContainer = document.getElementById("imperialInputsContainer");
+
+            // Inputs
+            const weightKgInput = document.getElementById("weight_kg");
+            const heightMInput = document.getElementById("height_m");
+            const weightLbsInput = document.getElementById("weight_lbs");
+            const heightFtInput = document.getElementById("height_ft");
+            const heightInInput = document.getElementById("height_in");
+
+            metricUnitsRadio.addEventListener("change", () => {
+                if (metricUnitsRadio.checked) {
+                    metricInputsContainer.classList.remove("hidden");
+                    imperialInputsContainer.classList.add("hidden");
+                    updateResults(); // Recalculate if units change
+                }
+            });
+
+            imperialUnitsRadio.addEventListener("change", () => {
+                if (imperialUnitsRadio.checked) {
+                    imperialInputsContainer.classList.remove("hidden");
+                    metricInputsContainer.classList.add("hidden");
+                    updateResults(); // Recalculate if units change
+                }
+            });
+            // END: Event listeners for unit selection
+
+
+            // Add dynamic update functionality
+            const formElements = form.querySelectorAll("input, select");
+            formElements.forEach(element => {
+                element.addEventListener("change", function(event) {
+                    // console.log(`CHANGE event on: ${event.target.id || event.target.name}`);
+                    updateResults();
+                });
+                // For number inputs, 'input' event gives more immediate feedback
+                if (element.type === "number" || element.type === "range") {
+                    element.addEventListener("input", function(event) {
+                        // console.log(`INPUT event on: ${event.target.id || event.target.name}`);
+                        updateResults();
+                    });
+                }
+            });
+            
+            // Form reset handler
+            form.addEventListener("reset", function() {
+                setTimeout(() => {
+                    chronologicalAgeDisplay.textContent = "--";
+                    cardiacAgeDisplay.textContent = "--";
+                    ageDifferenceDisplay.textContent = "your actual age";
+                    ageDifferenceDisplay.className = "age-difference";
+                    initialPrompt.classList.remove("hidden");
+                    detailedResults.classList.add("hidden");
+
+                    if (mobileCardiacAgeValue) {
+                        mobileCardiacAgeValue.textContent = "--";
+                        mobileAgeDifferenceText.textContent = "vs Actual";
+                        mobileAgeDifferenceText.className = '';
+                    }
+                    
+                    metricUnitsRadio.checked = true;
+                    metricInputsContainer.classList.remove("hidden");
+                    imperialInputsContainer.classList.add("hidden");
+                    
+                    // updateResults(); // Call updateResults to ensure display consistency after reset
+                }, 10);
+            });
+            
+            function updateResults() {
+                console.log("--- updateResults called ---"); // General call log
+
+                const ageInput = document.getElementById("age");
+                const chronologicalAge = parseInt(ageInput.value);
+                
+                const selectedFactors = {};
+                
+                const genderRadios = document.querySelectorAll('input[name="gender"]');
+                for (const radio of genderRadios) {
+                    if (radio.checked) {
+                        selectedFactors.gender = radio.value;
+                        break;
+                    }
+                }
+                
+                ["smoking", "physicalActivity", "diet", "cholesterol", "diabetes", "familyHistory", "stress"].forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element && element.value) {
+                        selectedFactors[id] = element.value;
+                    }
+                });
+                
+                // Get weight and height based on selected units
+                let weightInKg;
+                let heightInMeters;
+
+                if (metricUnitsRadio.checked) {
+                    weightInKg = parseFloat(weightKgInput.value);
+                    heightInMeters = parseFloat(heightMInput.value);
+                    // console.log(`Metric inputs: weight_kg=${weightKgInput.value}, height_m=${heightMInput.value}`);
+                } else { 
+                    const weightLbs = parseFloat(weightLbsInput.value);
+                    const heightFt = parseFloat(heightFtInput.value);
+                    const heightIn = parseFloat(heightInInput.value) || 0; 
+                    // console.log(`Imperial inputs: weight_lbs=${weightLbsInput.value}, height_ft=${heightFtInput.value}, height_in=${heightInInput.value}`);
+
+                    if (!isNaN(weightLbs)) {
+                        weightInKg = lbsToKg(weightLbs);
+                    }
+                    if (!isNaN(heightFt)) { 
+                        heightInMeters = feetInchesToMeters(heightFt, heightIn);
+                    }
+                }
+                // console.log(`Converted to metric: weightInKg=${weightInKg}, heightInMeters=${heightInMeters}`);
+
+                // Store the raw BMI category in selectedFactors
+                const bmiCategory = calculateBMICategory(weightInKg, heightInMeters);
+                if (bmiCategory) { // only add bmi factor if category is not null
+                    selectedFactors.bmi = bmiCategory;
+                }
+                // console.log("Current selectedFactors.bmi:", selectedFactors.bmi);
+
+
+                const systolic = parseInt(document.getElementById("systolic").value);
+                const diastolic = parseInt(document.getElementById("diastolic").value);
+                if (!isNaN(systolic) && !isNaN(diastolic) && systolic > 0 && diastolic > 0) {
+                    selectedFactors.bloodPressure = getBPCategory(systolic, diastolic);
+                } else {
+                    // If BP values are not valid, ensure no stale BP category is used
+                    delete selectedFactors.bloodPressure;
+                }
+                console.log("Current selectedFactors.bloodPressure:", selectedFactors.bloodPressure);
+
+                
+                if (!isNaN(chronologicalAge) && chronologicalAge >= 18 && chronologicalAge <= 100) {
+                    chronologicalAgeDisplay.textContent = chronologicalAge;
+                    
+                    // console.log("Calculating cardiac age with factors:", JSON.stringify(selectedFactors));
+                    const result = calculateCardiacAge(chronologicalAge, selectedFactors);
+                    const cardiacAge = result.cardiacAge;
+                    const ageDifference = cardiacAge - chronologicalAge;
+                    
+                    cardiacAgeDisplay.textContent = cardiacAge;
+                    initialPrompt.classList.add("hidden");
+                    
+                    if (mobileCardiacAgeValue) {
+                        mobileCardiacAgeValue.textContent = cardiacAge;
+                        mobileAgeDifferenceWrapper.style.display = 'inline';
+                        mobileAgeDifferenceText.className = ''; 
+                        if (ageDifference > 0) {
+                            mobileAgeDifferenceText.textContent = `+${ageDifference}yr${ageDifference !== 1 ? 's' : ''}`;
+                            mobileAgeDifferenceText.classList.add('positive');
+                        } else if (ageDifference < 0) {
+                            mobileAgeDifferenceText.textContent = `${ageDifference}yr${Math.abs(ageDifference) !== 1 ? 's' : ''}`;
+                            mobileAgeDifferenceText.classList.add('negative');
+                        } else {
+                            mobileAgeDifferenceText.textContent = `same`;
+                            mobileAgeDifferenceText.classList.add('zero');
+                        }
+                    }
+                    
+                    if (ageDifference > 0) {
+                        ageDifferenceDisplay.textContent = `${ageDifference} ${ageDifference === 1 ? 'year' : 'years'} older than your actual age`;
+                        ageDifferenceDisplay.className = "age-difference positive-difference";
+                    } else if (ageDifference < 0) {
+                        ageDifferenceDisplay.textContent = `${Math.abs(ageDifference)} ${Math.abs(ageDifference) === 1 ? 'year' : 'years'} younger than your actual age`;
+                        ageDifferenceDisplay.className = "age-difference negative-difference";
+                    } else {
+                        ageDifferenceDisplay.textContent = "the same as your actual age";
+                        ageDifferenceDisplay.className = "age-difference zero-difference";
+                    }
+                    
+                    const factorCount = Object.keys(selectedFactors).filter(key => selectedFactors[key] !== undefined && selectedFactors[key] !== null).length;
+
+                    // console.log("Factor count for detailed results:", factorCount);
+
+                    if (factorCount >= 3) { // Ensure we count actual factors provided
+                        detailedResults.classList.remove("hidden");
+                        
+                        const recommendations = generateRecommendations(result.impactDetails);
+                        recommendationsList.innerHTML = "";
+                        if (recommendations.length > 0) {
+                            recommendations.forEach(rec => {
+                                const p = document.createElement("p");
+                                p.className = "recommendation-item";
+                                p.textContent = rec;
+                                recommendationsList.appendChild(p);
+                            });
+                        } else {
+                            recommendationsList.innerHTML = "<p>Complete more of the form to receive personalized recommendations.</p>";
+                        }
+                        
+                        riskFactorsList.innerHTML = "";
+                        if (result.impactDetails.length > 0) {
+                            const table = document.createElement("table");
+                            // ... (table creation logic - ensure this part is correct)
+                            table.style.width = "100%";
+                            table.style.marginTop = "10px";
+                            table.style.borderCollapse = "collapse";
+                            
+                            const headerRow = document.createElement("tr");
+                            ["Factor", "Impact"].forEach(text => {
+                                const th = document.createElement("th");
+                                th.textContent = text;
+                                th.style.padding = "8px";
+                                th.style.textAlign = "left";
+                                th.style.borderBottom = "1px solid #ddd";
+                                headerRow.appendChild(th);
+                            });
+                            table.appendChild(headerRow);
+                            
+                            result.impactDetails.sort((a, b) => b.impact - a.impact).forEach(detail => {
+                                const row = document.createElement("tr");
+                                
+                                const factorCell = document.createElement("td");
+                                factorCell.textContent = detail.description;
+                                factorCell.style.padding = "8px";
+                                factorCell.style.borderBottom = "1px solid #eee";
+                                row.appendChild(factorCell);
+                                
+                                const impactCell = document.createElement("td");
+                                let sign = detail.impact > 0 ? "+" : "";
+                                impactCell.textContent = `${sign}${detail.impact} ${Math.abs(detail.impact) === 1 ? 'year' : 'years'}`;
+                                impactCell.style.padding = "8px";
+                                impactCell.style.borderBottom = "1px solid #eee";
+                                impactCell.style.fontWeight = "bold";
+                                impactCell.style.color = detail.impact > 0 ? 'var(--secondary-color)' : (detail.impact < 0 ? '#27ae60' : 'inherit');
+                                row.appendChild(impactCell);
+                                
+                                table.appendChild(row);
+                            });
+                            riskFactorsList.appendChild(table);
+                        } else {
+                            riskFactorsList.innerHTML = "<p>No specific risk factors identified with impact, or complete more of the form.</p>";
+                        }
+                    } else {
+                         detailedResults.classList.add("hidden");
+                         // Optional: Reset recommendations/risk factors if not enough data
+                         recommendationsList.innerHTML = "<p>Complete more of the form to receive personalized recommendations.</p>";
+                         riskFactorsList.innerHTML = "<p>Complete more of the form to see your risk factor breakdown.</p>";
+                    }
+                } else {
+                    chronologicalAgeDisplay.textContent = "--";
+                    cardiacAgeDisplay.textContent = "--";
+                    ageDifferenceDisplay.textContent = "your actual age";
+                    ageDifferenceDisplay.className = "age-difference";
+                    initialPrompt.classList.remove("hidden");
+                    detailedResults.classList.add("hidden");
+                    if (mobileCardiacAgeValue) {
+                        mobileCardiacAgeValue.textContent = "--";
+                        mobileAgeDifferenceText.textContent = "vs Actual";
+                        mobileAgeDifferenceText.className = '';
+                    }
+                }
+            }
+            // Initial call to set up based on defaults (if any)
+            // updateResults();
+            
+        });
+    </script>
+</body>
+</html>
